@@ -3,12 +3,12 @@ package Bloomfilter
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 
-class BloomfilterTableTest extends FunSuite with BeforeAndAfter {
-  var bloomfilter: BloomfilterTable = _
+class BloomfilterMapTest extends FunSuite with BeforeAndAfter {
+  var bloomfilter: Bloomfilter = _
   val words = new DictionaryReader().readFile()
 
   before {
-    bloomfilter = new BloomfilterTable with Md5splitHashes
+    bloomfilter = new BloomfilterMap with Md5splitHashes
     bloomfilter.insert(words)
   }
 
@@ -19,10 +19,12 @@ class BloomfilterTableTest extends FunSuite with BeforeAndAfter {
     var notFound = 0
     val wordsSeq = words.toSeq
     for (iteration <- 1 to iterations) {
-      val randomString = util.Random.alphanumeric.take(5).mkString
-      val exists: Boolean = bloomfilter.exists(randomString)
-      if(exists){
-        if(wordsSeq contains randomString) correctLookups += 1
+      val randomString = util.Random.alphanumeric.take(util.Random.nextInt(7)).mkString
+      if (bloomfilter.exists(randomString)){
+        if(wordsSeq contains randomString) {
+          correctLookups += 1
+          println("correct word: " + randomString)
+        }
         else falsePositives += 1
       }
       else notFound += 1

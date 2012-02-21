@@ -1,17 +1,15 @@
 package Bloomfilter
 
-abstract class BloomfilterTable {
+abstract class BloomfilterMap extends Bloomfilter {
   import scala.collection.mutable.Map
   private val table = Map[String,  Boolean]()
 
-  def hashes(word: String): List[String]
-
-  def insert(words: List[String]): BloomfilterTable = {
+  def insert(words: List[String]): BloomfilterMap = {
     words.foreach(insert(_))
     this
   }
 
-  def insert(word: String) = {
+  def insert(word: String): BloomfilterMap = {
     for (hash <- hashes(word)) table += (hash -> true)
     this
   }
