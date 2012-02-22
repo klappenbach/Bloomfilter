@@ -1,8 +1,10 @@
 package Bloomfilter
 
-abstract class BloomfilterMap extends Bloomfilter {
+class BloomfilterMap extends Bloomfilter {
   import scala.collection.mutable.Map
   private val table = Map[String,  Boolean]()
+
+  override def hashes(word: String) = List(word.hashCode().toString)
 
   def insert(words: List[String]): BloomfilterMap = {
     words.foreach(insert(_))

@@ -6,8 +6,6 @@ trait Bloomfilter {
 
     def insert(words: List[String]): Bloomfilter
 
-    def insert(word: String): Bloomfilter
-
     def exists(word: String): Boolean
 
     def size: Int

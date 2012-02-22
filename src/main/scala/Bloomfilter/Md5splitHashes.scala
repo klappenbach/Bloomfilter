@@ -1,7 +1,7 @@
 package Bloomfilter
 
-trait Md5splitHashes {
-  def hashes(word: String): List[String] = MD5.hash(word).grouped(5).toList
+trait Md5splitHashes extends Bloomfilter {
+  abstract override def hashes(word: String): List[String] = MD5.hash(word).grouped(5).toList
 }
 
 object MD5 {
