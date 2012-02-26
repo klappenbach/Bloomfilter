@@ -6,10 +6,9 @@ package Bloomfilter;
  */
 object App extends App {
   val words: List[String] = new DictionaryReader().readFile()
-  val table: Bloomfilter = new BloomfilterMap // with Md5splitHashes
-    table.insert(words)
-  println(table.size)
-  println(table.exists("madsfs"))
+  val table: Bloomfilter = new BloomfilterArray(words) with Md5splitHashes
+  println("Loaded " + table.size + " words.")
   println(table.exists("madman"))
+  println(table.exists("madsfs"))
   println(table.exists("madman345"))
 }

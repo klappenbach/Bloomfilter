@@ -8,31 +8,33 @@ class BloomfilterArrayTest extends FunSuite with BeforeAndAfter {
   val words = new DictionaryReader().readFile()
 
   before {
-    bloomfilter = new BloomfilterArray
-    bloomfilter.insert(words)
+    bloomfilter = new BloomfilterArray(words) with Md5splitHashes
+    println("\nLoaded " + bloomfilter.size + " words into Bloom filter.")
+    println("fillrate: " + bloomfilter.asInstanceOf[BloomfilterArray].fillRate )
   }
 
-  test("false positives rate is under 2%") {
+  test("false positives rate for 1000 random words is under 2%") {
     val iterations = 1000
     var falsePositives = 0;
     var correctLookups = 0;
     var notFound = 0
-    val wordsSeq = words.toSeq
+    val dictionary = words.toSeq
+
     for (iteration <- 1 to iterations) {
-      val randomString = util.Random.alphanumeric.take(util.Random.nextInt(7)).mkString
+      val randomString = util.Random.alphanumeric.take(util.Random.nextInt(6) + 1).mkString
       if (bloomfilter.exists(randomString)) {
-        if (wordsSeq contains randomString) {
+        if (dictionary contains randomString) {
           correctLookups += 1
-          println("correct word: " + randomString)
         }
         else falsePositives += 1
       }
       else notFound += 1
     }
-    println("false positives: " + falsePositives)
-    println("correct lookups: " + correctLookups)
-    println("not found: " + notFound)
-    val falsePositivePercent = falsePositives * 100 / iterations
+
+    val falsePositivePercent = falsePositives * 100 / iterations.toDouble
+    println("\nOut of " + iterations + " random word lookups:")
+    println("*** false positives: " + falsePositives + " (" + falsePositivePercent + "%) ***")
+    println("\n(correct lookups: " + correctLookups + ", not found: " + notFound + ")")
     assert(falsePositivePercent < 2, "False positives are not under 2%, it's  a staggering " + falsePositivePercent + "%!")
   }
 }

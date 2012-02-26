@@ -1,33 +1,27 @@
 package Bloomfilter
 
-class BloomfilterArray extends Bloomfilter {
+class BloomfilterArray(private val words: List[String]) extends Bloomfilter(words) {
 
-
-  private val table = new Array[Boolean](460000*5)
+  private val bitsPerWord = 10
+  private val table = new Array[Boolean](words.size * bitsPerWord)
+  insert(words)
 
   override def hashes(word: String) = List(word.hashCode() + "")
 
-  def insert(words: List[String]): BloomfilterArray = {
+  private def insert(words: List[String]) {
     words.foreach(insert(_))
-    this
   }
 
-  private def insert(word: String): BloomfilterArray = {
+  private def insert(word: String) {
     for (hash <- hashes(word)) table(getIndex(hash)) = true
-    this
   }
 
-  def exists(word: String): Boolean = {
-    hashes(word).forall((hash: String) => table(getIndex(hash)) )
-  }
+  def exists(word: String) = hashes(word).forall((hash: String) => table(getIndex(hash)) )
 
-  def getIndex(hash: String) = {
-    
-    val i = math.abs(hash.toInt) % table.size
-    if(i < 0) println("hash string: " + hash + " hashcode: " + hash.toInt + " table.size: " + table.size)
-    i
-  }
-  
-  def size = table.size
+  private def getIndex(hash: String) = math.abs(hash.hashCode) % table.size
+
+  def fillRate: Double = table.count(b => b)/table.size.toDouble
+
+  def size = words.size
 
 }
